@@ -121,5 +121,10 @@
 
 <footer><div class="footer-logo">🔎 <strong>GHRSTU Find</strong></div><p>Making lost things find their way home.</p><span>© 2026 G H Raisoni Skill Tech University</span></footer>
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  <script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/static/service-worker.js");
+}
+</script>
 </body>
 </html>
