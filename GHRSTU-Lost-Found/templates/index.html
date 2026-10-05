@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GHRSTU Find | Lost & Found</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="background"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+
+<header class="navbar">
+  <a class="logo" href="{{ url_for('home') }}">
+    <div class="logo-icon">🔎</div>
+    <div class="logo-text"><h2>GHRSTU <span>Find</span></h2><p>Lost & Found</p></div>
+  </a>
+  <nav>
+    <a href="#home">Home</a><a href="#explore">Explore</a><a href="#how">How it works</a>
+  </nav>
+  <div class="nav-actions">
+    <a class="login-btn" href="#explore">Browse</a>
+    <a class="signup-btn" href="{{ url_for('report_item') }}">Report an item →</a>
+  </div>
+</header>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="toast-stack">
+      {% for category, message in messages %}
+        <div class="toast {{ category }}"><span>{{ '✓' if category == 'success' else '!' }}</span>{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<main id="home">
+<section class="hero">
+  <div class="hero-content">
+    <div class="badge">✦ GHRSTU CAMPUS COMMUNITY</div>
+    <h1>Lost something?<span>Let's find it.</span></h1>
+    <p class="hero-text">A smarter, prettier way for GHRSTU students and staff to report, discover and recover lost belongings across campus.</p>
+    <div class="hero-buttons">
+      <a href="{{ url_for('report_item', type='lost') }}" class="primary-btn">🔍 I Lost Something</a>
+      <a href="{{ url_for('report_item', type='found') }}" class="secondary-btn">📦 I Found Something</a>
+    </div>
+    <div class="trust-line"><span>●</span> Live campus reports • photo upload • smart search</div>
+  </div>
+  <div class="hero-visual">
+    <div class="floating-card card-top"><span class="floating-icon">🎧</span><div><strong>AirPods</strong><small>Found near Library</small></div><b>✓</b></div>
+    <div class="main-glass-card">
+      <div class="scan-ring"><div class="scan-icon">🔎</div></div>
+      <h3>Find it faster.</h3><p>Search real campus reports and spot the right item in seconds.</p>
+      <div class="mini-progress"><div></div></div><small>Scanning campus...</small>
+    </div>
+    <div class="floating-card card-bottom"><span class="floating-icon">🎒</span><div><strong>Black Backpack</strong><small>Possible match</small></div><b>98%</b></div>
+  </div>
+</section>
+
+<section class="quick-actions">
+  <a href="{{ url_for('report_item', type='lost') }}" class="action-card lost-card"><div class="action-icon">🔎</div><div><h3>Lost something?</h3><p>Report it with a photo and campus location.</p></div><span class="arrow">→</span></a>
+  <a href="{{ url_for('report_item', type='found') }}" class="action-card found-card"><div class="action-icon">📦</div><div><h3>Found something?</h3><p>Post it so the owner can find their item.</p></div><span class="arrow">→</span></a>
+</section>
+
+<section class="stats-section">
+  <div class="section-heading"><span>LIVE COMMUNITY</span><h2>Real reports. <em>Real impact.</em></h2></div>
+  <div class="stats-grid">
+    <div class="stat-card"><span>📋</span><h3>{{ total }}</h3><p>Active Reports</p></div>
+    <div class="stat-card"><span>🔎</span><h3>{{ lost }}</h3><p>Items Lost</p></div>
+    <div class="stat-card"><span>📦</span><h3>{{ found }}</h3><p>Items Found</p></div>
+    <div class="stat-card"><span>⚡</span><h3>{{ recovery_rate }}%</h3><p>Recovery Rate</p></div>
+  </div>
+</section>
+
+<section class="explore-section" id="explore">
+  <div class="section-heading section-heading-row">
+    <div><span>RECENTLY REPORTED</span><h2>What's happening <em>on campus?</em></h2></div>
+    <a class="outline-btn" href="{{ url_for('explore') }}">View all reports →</a>
+  </div>
+
+  <form class="search-bar" action="{{ url_for('explore') }}" method="GET">
+    <div class="search-input"><span>⌕</span><input name="q" value="{{ search }}" placeholder="Search backpack, bottle, library, Apple..."></div>
+    <select name="type"><option value="">All</option><option value="lost" {% if item_type=='lost' %}selected{% endif %}>Lost</option><option value="found" {% if item_type=='found' %}selected{% endif %}>Found</option></select>
+    <button class="primary-btn" type="submit">Search</button>
+  </form>
+
+  {% if items %}
+  <div class="items-grid">
+    {% for item in items %}
+    <a class="item-card" href="{{ url_for('item_detail', item_id=item['id']) }}">
+      <div class="item-image {{ 'found-image' if item['item_type']=='found' else 'lost-image' }}">
+        {% if item['image_path'] %}
+          <img src="{{ url_for('uploaded_file', filename=item['image_path']) }}" alt="{{ item['item_name'] }}">
+        {% else %}<span class="item-emoji">{{ '📦' if item['item_type']=='found' else '🔍' }}</span>{% endif %}
+        <span class="status {{ 'lost' if item['item_type']=='lost' else '' }}">{{ item['item_type']|upper }}</span>
+      </div>
+      <div class="item-info"><div class="card-meta"><span>{{ item['category'] or 'Other' }}</span><span>{{ item['date_reported'] or 'Date not set' }}</span></div>
+        <h3>{{ item['item_name'] }}</h3><p>📍 {{ item['location'] }}</p><small>{{ item['description']|truncate(90) }}</small>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+    <div class="empty-state"><div>🪄</div><h3>No matching reports yet</h3><p>Try another search or be the first person to report this kind of item.</p><a class="primary-btn" href="{{ url_for('report_item') }}">Create a report</a></div>
+  {% endif %}
+</section>
+
+<section class="how-section" id="how">
+  <div class="section-heading center"><span>SIMPLE. FAST. SECURE.</span><h2>Lost → Found → <em>Returned.</em></h2></div>
+  <div class="steps">
+    <div class="step"><div class="step-number">01</div><h3>Report</h3><p>Add details, location and a clear photo.</p></div>
+    <div class="step"><div class="step-number">02</div><h3>Explore</h3><p>Search live reports by keyword and status.</p></div>
+    <div class="step"><div class="step-number">03</div><h3>Verify</h3><p>Open the report and check the identifying details.</p></div>
+    <div class="step"><div class="step-number">04</div><h3>Recover</h3><p>Coordinate the safe return of the item.</p></div>
+  </div>
+</section>
+
+<section class="cta-section"><div><span>YOUR CAMPUS. YOUR COMMUNITY.</span><h2>One less thing<br>to worry about.</h2></div><a class="primary-btn" href="{{ url_for('report_item') }}">Start a report →</a></section>
+</main>
+
+<footer><div class="footer-logo">🔎 <strong>GHRSTU Find</strong></div><p>Making lost things find their way home.</p><span>© 2026 G H Raisoni Skill Tech University</span></footer>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

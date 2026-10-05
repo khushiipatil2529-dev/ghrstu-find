@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Report Item | GHRSTU Find</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <style>
+
+        /* =====================================================
+           REPORT PAGE
+           ===================================================== */
+
+        .report-page {
+
+            width: min(900px, calc(100% - 32px));
+
+            margin: 60px auto 100px;
+
+        }
+
+
+        .report-header {
+
+            text-align: center;
+
+            margin-bottom: 45px;
+
+        }
+
+
+        .report-header .badge {
+
+            margin-left: auto;
+            margin-right: auto;
+
+        }
+
+
+        .report-header h1 {
+
+            font-family: "Space Grotesk", sans-serif;
+
+            font-size: clamp(38px, 6vw, 65px);
+
+            line-height: 1;
+
+            letter-spacing: -3px;
+
+            margin-top: 15px;
+
+        }
+
+
+        .report-header h1 span {
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #a78bfa,
+                    #ec4899,
+                    #38bdf8
+                );
+
+            -webkit-background-clip: text;
+
+            background-clip: text;
+
+            color: transparent;
+
+        }
+
+
+        .report-header p {
+
+            color: var(--muted);
+
+            max-width: 580px;
+
+            margin: 18px auto 0;
+
+            line-height: 1.7;
+
+            font-size: 14px;
+
+        }
+
+
+        /* =====================================================
+           FORM CARD
+           ===================================================== */
+
+        .report-card {
+
+            padding: 35px;
+
+            border-radius: 30px;
+
+            border:
+                1px solid rgba(255,255,255,0.11);
+
+            background:
+                rgba(255,255,255,0.045);
+
+            backdrop-filter: blur(25px);
+
+            box-shadow:
+                0 30px 90px rgba(0,0,0,0.28);
+
+        }
+
+
+        .form-section {
+
+            margin-bottom: 35px;
+
+        }
+
+
+        .form-section-title {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 22px;
+
+        }
+
+
+        .form-section-number {
+
+            width: 34px;
+            height: 34px;
+
+            display: grid;
+
+            place-items: center;
+
+            border-radius: 11px;
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--pink)
+                );
+
+        }
+
+
+        .form-section-title h2 {
+
+            font-family: "Space Grotesk", sans-serif;
+
+            font-size: 18px;
+
+        }
+
+
+        /* =====================================================
+           LOST / FOUND SELECTOR
+           ===================================================== */
+
+        .type-selector {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 12px;
+
+        }
+
+
+        .type-option {
+
+            position: relative;
+
+        }
+
+
+        .type-option input {
+
+            position: absolute;
+
+            opacity: 0;
+
+            pointer-events: none;
+
+        }
+
+
+        .type-label {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            padding: 18px;
+
+            border-radius: 18px;
+
+            border:
+                1px solid rgba(255,255,255,0.09);
+
+            background:
+                rgba(255,255,255,0.035);
+
+            cursor: pointer;
+
+            transition:
+                0.25s ease;
+
+        }
+
+
+        .type-label:hover {
+
+            background:
+                rgba(255,255,255,0.07);
+
+            transform: translateY(-2px);
+
+        }
+
+
+        .type-icon {
+
+            width: 48px;
+            height: 48px;
+
+            display: grid;
+
+            place-items: center;
+
+            border-radius: 14px;
+
+            font-size: 23px;
+
+            background:
+                rgba(139,92,246,0.12);
+
+        }
+
+
+        .type-label strong {
+
+            display: block;
+
+            font-size: 14px;
+
+        }
+
+
+        .type-label small {
+
+            display: block;
+
+            color: var(--muted);
+
+            margin-top: 4px;
+
+            font-size: 10px;
+
+        }
+
+
+        .type-option input:checked + .type-label {
+
+            border-color:
+                rgba(139,92,246,0.65);
+
+            background:
+                rgba(139,92,246,0.12);
+
+            box-shadow:
+                0 0 30px rgba(139,92,246,0.09);
+
+        }
+
+
+        /* =====================================================
+           INPUTS
+           ===================================================== */
+
+        .form-grid {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 17px;
+
+        }
+
+
+        .form-group {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 8px;
+
+        }
+
+
+        .form-group.full {
+
+            grid-column: 1 / -1;
+
+        }
+
+
+        .form-group label {
+
+            color: #d7d7e1;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+        }
+
+
+        .form-group label span {
+
+            color: var(--pink);
+
+        }
+
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+
+            width: 100%;
+
+            border: 1px solid
+                rgba(255,255,255,0.09);
+
+            outline: none;
+
+            border-radius: 14px;
+
+            padding: 14px 15px;
+
+            color: white;
+
+            background:
+                rgba(255,255,255,0.045);
+
+            font-family: inherit;
+
+            font-size: 12px;
+
+            transition:
+                border-color 0.2s ease,
+                background 0.2s ease,
+                box-shadow 0.2s ease;
+
+        }
+
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+
+            border-color:
+                rgba(139,92,246,0.65);
+
+            background:
+                rgba(255,255,255,0.065);
+
+            box-shadow:
+                0 0 0 4px
+                rgba(139,92,246,0.08);
+
+        }
+
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+
+            color: #666675;
+
+        }
+
+
+        .form-group textarea {
+
+            min-height: 125px;
+
+            resize: vertical;
+
+        }
+
+
+        .form-group select option {
+
+            background: #15151f;
+
+            color: white;
+
+        }
+
+
+        /* =====================================================
+           PHOTO UPLOAD
+           ===================================================== */
+
+        .upload-box {
+
+            border:
+                1px dashed
+                rgba(139,92,246,0.45);
+
+            border-radius: 22px;
+
+            min-height: 230px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-align: center;
+
+            padding: 25px;
+
+            cursor: pointer;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    rgba(139,92,246,0.08),
+                    rgba(255,255,255,0.02)
+                );
+
+            transition:
+                0.3s ease;
+
+            position: relative;
+
+            overflow: hidden;
+
+        }
+
+
+        .upload-box:hover {
+
+            border-color:
+                rgba(236,72,153,0.65);
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    rgba(236,72,153,0.09),
+                    rgba(255,255,255,0.025)
+                );
+
+            transform: translateY(-3px);
+
+        }
+
+
+        .upload-content {
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+        }
+
+
+        .upload-icon {
+
+            width: 65px;
+            height: 65px;
+
+            display: grid;
+
+            place-items: center;
+
+            border-radius: 19px;
+
+            font-size: 28px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(139,92,246,0.2),
+                    rgba(236,72,153,0.15)
+                );
+
+            margin-bottom: 15px;
+
+        }
+
+
+        .upload-content strong {
+
+            font-family: "Space Grotesk", sans-serif;
+
+            font-size: 16px;
+
+        }
+
+
+        .upload-content p {
+
+            color: var(--muted);
+
+            font-size: 11px;
+
+            margin-top: 6px;
+
+        }
+
+
+        .upload-content small {
+
+            color: #656575;
+
+            font-size: 9px;
+
+            margin-top: 12px;
+
+        }
+
+
+        #imagePreview {
+
+            display: none;
+
+            width: 100%;
+
+            max-height: 300px;
+
+            object-fit: contain;
+
+            border-radius: 16px;
+
+        }
+
+
+        /* =====================================================
+           SUBMIT
+           ===================================================== */
+
+        .submit-area {
+
+            padding-top: 10px;
+
+            border-top:
+                1px solid rgba(255,255,255,0.07);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+        }
+
+
+        .privacy-note {
+
+            color: #6d6d7d;
+
+            font-size: 10px;
+
+            line-height: 1.6;
+
+            max-width: 390px;
+
+        }
+
+
+        .submit-btn {
+
+            padding: 16px 24px;
+
+            border-radius: 15px;
+
+            color: white;
+
+            font-weight: 800;
+
+            font-size: 13px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--pink)
+                );
+
+            box-shadow:
+                0 12px 35px
+                rgba(139,92,246,0.25);
+
+            transition:
+                0.25s ease;
+
+        }
+
+
+        .submit-btn:hover {
+
+            transform:
+                translateY(-3px)
+                scale(1.02);
+
+            box-shadow:
+                0 18px 45px
+                rgba(236,72,153,0.28);
+
+        }
+
+
+        /* =====================================================
+           BACK LINK
+           ===================================================== */
+
+        .back-link {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            color: #888895;
+
+            font-size: 12px;
+
+            margin-bottom: 20px;
+
+            transition: 0.2s ease;
+
+        }
+
+
+        .back-link:hover {
+
+            color: white;
+
+            transform: translateX(-3px);
+
+        }
+
+
+        /* =====================================================
+           MOBILE
+           ===================================================== */
+
+        @media (max-width: 650px) {
+
+            .report-page {
+
+                margin-top: 35px;
+
+            }
+
+
+            .report-card {
+
+                padding: 20px;
+
+                border-radius: 24px;
+
+            }
+
+
+            .type-selector {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .form-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .form-group.full {
+
+                grid-column: auto;
+
+            }
+
+
+            .submit-area {
+
+                flex-direction: column;
+
+                align-items: stretch;
+
+            }
+
+
+            .submit-btn {
+
+                width: 100%;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <!-- Background -->
+
+    <div class="background">
+
+        <div class="orb orb-1"></div>
+
+        <div class="orb orb-2"></div>
+
+        <div class="orb orb-3"></div>
+
+    </div>
+
+
+    <!-- Navbar -->
+
+    <header class="navbar">
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                🔎
+            </div>
+
+            <div class="logo-text">
+
+                <h2>
+                    GHRSTU <span>Find</span>
+                </h2>
+
+                <p>
+                    Lost & Found
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <nav>
+
+            <a href="/">
+                Home
+            </a>
+
+            <a href="/#explore">
+                Explore
+            </a>
+
+            <a href="/#how">
+                How it works
+            </a>
+
+        </nav>
+
+
+        <div class="nav-actions">
+
+            <a
+                href="/"
+                class="login-btn"
+            >
+                ← Back
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- Main -->
+
+    <main class="report-page">
+
+
+        <a
+            href="/"
+            class="back-link"
+        >
+            ← Back to GHRSTU Find
+        </a>
+
+
+        <!-- Header -->
+
+        <section class="report-header">
+
+            <div class="badge">
+                ✦ CAMPUS REPORT
+            </div>
+
+
+            <h1>
+
+                Tell us what
+
+                <span>
+                    happened.
+                </span>
+
+            </h1>
+
+
+            <p>
+
+                Add as much detail as possible.
+                A clear photo and accurate location
+                can make your item much easier to find.
+
+            </p>
+
+        </section>
+
+
+        <!-- Form -->
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="report-flash-stack">
+                {% for category, message in messages %}
+                    <div class="toast {{ category }}">{{ '✓' if category == 'success' else '!' }} {{ message }}</div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form
+            class="report-card"
+            method="POST"
+            action="/report"
+            enctype="multipart/form-data"
+        >
+
+
+            <!-- =================================================
+                 SECTION 01
+                 ================================================= -->
+
+            <section class="form-section">
+
+                <div class="form-section-title">
+
+                    <div class="form-section-number">
+                        01
+                    </div>
+
+                    <h2>
+                        What happened?
+                    </h2>
+
+                </div>
+
+
+                <div class="type-selector">
+
+
+                    <div class="type-option">
+
+                        <input
+                            type="radio"
+                            id="lost"
+                            name="item_type"
+                            value="lost"
+                            {% if request.args.get("type", "lost") == "lost" %}checked{% endif %}
+                        >
+
+                        <label
+                            for="lost"
+                            class="type-label"
+                        >
+
+                            <div class="type-icon">
+                                🔍
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    I lost something
+                                </strong>
+
+                                <small>
+                                    Help me find my item
+                                </small>
+
+                            </div>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="type-option">
+
+                        <input
+                            type="radio"
+                            id="found"
+                            name="item_type"
+                            value="found"
+                            {% if request.args.get("type") == "found" %}checked{% endif %}
+                        >
+
+                        <label
+                            for="found"
+                            class="type-label"
+                        >
+
+                            <div class="type-icon">
+                                📦
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    I found something
+                                </strong>
+
+                                <small>
+                                    Help me return it
+                                </small>
+
+                            </div>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SECTION 02
+                 ================================================= -->
+
+            <section class="form-section">
+
+                <div class="form-section-title">
+
+                    <div class="form-section-number">
+                        02
+                    </div>
+
+                    <h2>
+                        Tell us about the item
+                    </h2>
+
+                </div>
+
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Item name <span>*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            name="item_name"
+                            placeholder="e.g. Black backpack"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Category
+                        </label>
+
+                        <select name="category">
+
+                            <option value="">
+                                Select category
+                            </option>
+
+                            <option>
+                                Electronics
+                            </option>
+
+                            <option>
+                                Bags & Backpacks
+                            </option>
+
+                            <option>
+                                Books & Notes
+                            </option>
+
+                            <option>
+                                ID Cards
+                            </option>
+
+                            <option>
+                                Keys
+                            </option>
+
+                            <option>
+                                Wallet / Money
+                            </option>
+
+                            <option>
+                                Accessories
+                            </option>
+
+                            <option>
+                                Clothing
+                            </option>
+
+                            <option>
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Color
+                        </label>
+
+                        <input
+                            type="text"
+                            name="color"
+                            placeholder="e.g. Black"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Brand
+                        </label>
+
+                        <input
+                            type="text"
+                            name="brand"
+                            placeholder="e.g. HP, Nike, Apple"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group full">
+
+                        <label>
+                            Identifying marks
+                        </label>
+
+                        <input
+                            type="text"
+                            name="identifying_marks"
+                            placeholder="Sticker, scratch, initials, case, etc."
+                        >
+
+                    </div>
+
+
+                    <div class="form-group full">
+
+                        <label>
+                            Description <span>*</span>
+                        </label>
+
+                        <textarea
+                            name="description"
+                            placeholder="Describe the item in detail..."
+                            required
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SECTION 03 — PHOTO
+                 ================================================= -->
+
+            <section class="form-section">
+
+                <div class="form-section-title">
+
+                    <div class="form-section-number">
+                        03
+                    </div>
+
+                    <h2>
+                        Add a photo
+                    </h2>
+
+                </div>
+
+
+                <label
+                    for="image"
+                    class="upload-box"
+                >
+
+                    <div class="upload-content">
+
+                        <div class="upload-icon">
+                            📸
+                        </div>
+
+                        <strong>
+                            Drop your photo here
+                        </strong>
+
+                        <p>
+                            or click to browse from your device
+                        </p>
+
+                        <small>
+                            JPG, JPEG, PNG or WEBP
+                        </small>
+
+                    </div>
+
+
+                    <img
+                        id="imagePreview"
+                        alt="Selected image preview"
+                    >
+
+                </label>
+
+
+                <input
+                    id="image"
+                    type="file"
+                    name="image"
+                    accept="image/png,image/jpeg,image/webp"
+                    hidden
+                >
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SECTION 04
+                 ================================================= -->
+
+            <section class="form-section">
+
+                <div class="form-section-title">
+
+                    <div class="form-section-number">
+                        04
+                    </div>
+
+                    <h2>
+                        Where & when?
+                    </h2>
+
+                </div>
+
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Campus location <span>*</span>
+                        </label>
+
+                        <select
+                            name="location"
+                            required
+                        >
+
+                            <option value="">
+                                Select location
+                            </option>
+
+                            <option>
+                                Main Gate
+                            </option>
+
+                            <option>
+                                Central Library
+                            </option>
+
+                            <option>
+                                Canteen
+                            </option>
+
+                            <option>
+                                Block A
+                            </option>
+
+                            <option>
+                                Block B
+                            </option>
+
+                            <option>
+                                Block C
+                            </option>
+
+                            <option>
+                                Computer Lab
+                            </option>
+
+                            <option>
+                                Classroom
+                            </option>
+
+                            <option>
+                                Auditorium
+                            </option>
+
+                            <option>
+                                Sports Ground
+                            </option>
+
+                            <option>
+                                Parking Area
+                            </option>
+
+                            <option>
+                                Other Campus Area
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Date <span>*</span>
+                        </label>
+
+                        <input
+                            type="date"
+                            name="date_reported"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SUBMIT
+                 ================================================= -->
+
+            <div class="submit-area">
+
+
+                <p class="privacy-note">
+
+                    🔒 Your report will be stored securely.
+                    Only information needed to help recover
+                    the item will be displayed to other users.
+
+                </p>
+
+
+                <button
+                    type="submit"
+                    class="submit-btn"
+                >
+
+                    Submit Report 🚀
+
+                </button>
+
+
+            </div>
+
+
+        </form>
+
+    </main>
+
+
+    <script>
+
+        /* =====================================================
+           IMAGE PREVIEW
+           ===================================================== */
+
+        const imageInput =
+            document.getElementById("image");
+
+        const imagePreview =
+            document.getElementById("imagePreview");
+
+        const uploadContent =
+            document.querySelector(".upload-content");
+
+
+        imageInput.addEventListener(
+            "change",
+            function () {
+
+                const file = this.files[0];
+
+                if (!file) {
+
+                    imagePreview.style.display =
+                        "none";
+
+                    uploadContent.style.display =
+                        "flex";
+
+                    return;
+
+                }
+
+
+                const reader =
+                    new FileReader();
+
+
+                reader.onload = function (event) {
+
+                    imagePreview.src =
+                        event.target.result;
+
+                    imagePreview.style.display =
+                        "block";
+
+                    uploadContent.style.display =
+                        "none";
+
+                };
+
+
+                reader.readAsDataURL(file);
+
+            }
+        );
+
+
+        /* =====================================================
+           SET TODAY AS DEFAULT DATE
+           ===================================================== */
+
+        const dateInput =
+            document.querySelector(
+                'input[name="date_reported"]'
+            );
+
+
+        if (dateInput) {
+
+            const today =
+                new Date()
+                    .toISOString()
+                    .split("T")[0];
+
+            dateInput.value = today;
+
+        }
+
+    </script>
+
+</body>
+
+</html>
